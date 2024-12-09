@@ -35,7 +35,7 @@ app.use(errorHandler);
 
 const start = async () => {
     try {
-        // await mongoose.connect(mongoDBKey);
+        await mongoose.connect(mongoDBKey);
         app.listen(PORT, () => console.log(`Server is run on ${PORT} port`));
     } catch (err) {
         console.error("Server not run because " + err);
