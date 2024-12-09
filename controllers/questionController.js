@@ -26,6 +26,7 @@ try {
 
 const getAll = async (req, res) => {
     try {
+        console.log('inside get-request-function!')
         const questions = await Questions.find({});
 
         if(questions.length === 0) {
