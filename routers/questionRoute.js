@@ -5,7 +5,7 @@ const {create, getAll, getOne} = require('../controllers/questionController');
 
 
 router.get('/', getAll);
-router.get('/', getOne);
+// router.get('/', getOne);
 router.post('/', create);
 
 

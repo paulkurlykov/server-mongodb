@@ -14,7 +14,17 @@ try {
 };
 
 const getAll = async (req, res) => {
-    const questions = "";
+    try {
+        const questions = await Questions.find({});
+
+        if(questions.length === 0) {
+            return res.json({message: 'there is no data'});
+        }
+    
+        return res.json(questions);
+    } catch (err) {
+        console.error("Exception " + err);
+    }
 };
 
 const getOne = async (req, res) => {
