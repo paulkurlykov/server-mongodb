@@ -3,9 +3,20 @@ const Questions = require('../models/questions');
 const create = async (req, res) => {
 
 try {
-    const questions = await Questions.find({});
+    const {question, label, answerType, options, textAnswer, codeSnippet} = req.body;
 
-    return res.json(questions);
+    const questionItem = new Questions({
+        question,
+        label,
+        answerType,
+        options,
+        textAnswer,
+        codeSnippet
+    });
+
+    const responce = await questionItem.save();
+
+    return res.json(responce);
 } catch (err) {
     console.error("Exception " + err);
 }
