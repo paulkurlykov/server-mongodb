@@ -6,7 +6,8 @@ const schema = new Schema({
     answerType: String,
     options: [String],
     textAnswer: String,
-    rightAnswer: Number
+    rightAnswer: Number,
+    codeSnippet: String
 });
 
 module.exports = model('Questions', schema);
