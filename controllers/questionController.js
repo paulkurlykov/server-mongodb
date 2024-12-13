@@ -3,20 +3,21 @@ const ApiErrors = require("../error/ApiErrors");
 
 const create = async (req, res, next) => {
     try {
-        const { question, label, answerType, options, textAnswer, codeSnippet } = req.body;
+        const { question, topic, answerType, options, rightAnswer, textAnswer, codeSnippet } = req.body;
 
         const questionItem = new Questions({
             question,
-            label,
+            topic,
             answerType,
             options,
             textAnswer,
+            rightAnswer,
             codeSnippet
         });
 
         const responce = await questionItem.save();
 
-        const response = { question, label, answerType, options, textAnswer, codeSnippet };
+        const response = { question, topic, answerType, options, textAnswer, rightAnswer, codeSnippet };
 
         return res.json(response);
     } catch (err) {
