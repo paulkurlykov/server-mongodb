@@ -15,11 +15,9 @@ const create = async (req, res, next) => {
             codeSnippet
         });
 
-        const responce = await questionItem.save();
+        const response = await questionItem.save();
 
-        const response = { question, topic, answerType, options, textAnswer, rightAnswer, codeSnippet };
-
-        return res.json(response);
+        return res.status(201).json(response);
     } catch (err) {
         next(ApiErrors.badRequest("Could not upload question"));
     }

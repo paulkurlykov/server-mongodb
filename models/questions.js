@@ -2,11 +2,11 @@ const {Schema, model} = require('mongoose');
 
 const schema = new Schema({
     question: String,
-    label: String,
+    topic: String,
     answerType: String,
     options: [String],
     textAnswer: String,
-    rightAnswer: Number,
+    rightAnswer: String,
     codeSnippet: String
 });
 
