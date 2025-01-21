@@ -60,7 +60,7 @@ const removeOne = async (req, res, next) => {
         return res.status(400).json({ error: "Invalid ID format" });
     }
 
-    const question = await Questions.deleteOne({ _id: ObjectId(id) });
+    const result = await Questions.deleteOne({ _id: ObjectId(id) });
 
     if (result.deletedCount === 0) {
         return res.status(404).json({ message: "Item not found" });
