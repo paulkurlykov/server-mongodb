@@ -54,24 +54,23 @@ const getOne = async (req, res, next) => {
 };
 
 const removeOne = async (req, res, next) => {
-    const { id } = req.params;
-
-    if (!ObjectId.isValid(id)) {
-        return res.status(400).json({ error: "Invalid ID format" });
-    }
-
-    const result = await Questions.deleteOne({ _id: ObjectId(id) });
-
-    if (result.deletedCount === 0) {
-        return res.status(404).json({ message: "Item not found" });
-    }
-
-    res.status(200).json({ message: "Item deleted successfully" });
-
     try {
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Invalid ID format" });
+        }
+
+        const result = await Questions.deleteOne({ _id: ObjectId(id) });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "Item not found" });
+        }
+
+        res.status(200).json({ message: "Item deleted successfully" });
     } catch (err) {
         console.error("Exception " + err);
-        res.status(500).json({message: `cannot do it cause ${err}`})
+        next(ApiErrors.badRequest("Could not delete question by ID"));
     }
 };
 
