@@ -43,6 +43,8 @@ const getOne = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        
+
         const question = await Questions.findById(id).exec();
 
         return res.json(question);
@@ -51,4 +53,28 @@ const getOne = async (req, res, next) => {
     }
 };
 
-module.exports = { create, getAll, getOne };
+const removeOne = async (req, res, next) => {
+
+    const {id} = req.params;
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: "Invalid ID format" });
+      }
+
+    const question = await Questions.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+        return res.status(404).json({ message: "Item not found" });
+      }
+  
+      res.status(200).json({ message: "Item deleted successfully" });
+
+    try {
+        
+    } catch (err) {
+        console.error("Exception " + err);
+    }
+
+}
+
+module.exports = { create, getAll, getOne, removeOne };
