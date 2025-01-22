@@ -7,6 +7,9 @@ const {create, getAll, getOne, removeOne} = require('../controllers/questionCont
 router.get('/', getAll);
 router.get('/:id', getOne);
 router.post('/', create);
-router.delete('/:id', removeOne);
+router.delete('/:id', (req, res, next) => {
+    console.log(`DELETE request received with ID: ${req.params.id}`);
+    next();
+}, removeOne);
 
 module.exports = router;
