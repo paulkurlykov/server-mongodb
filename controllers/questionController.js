@@ -55,19 +55,19 @@ const getOne = async (req, res, next) => {
 
 const removeOne = async (req, res, next) => {
     try {
-        // const { id } = req.params;
+        const { id } = req.params;
 
-        const { question } =
-        req.body;
+        // const { question } =
+        // req.body;
 
-        // if (!ObjectId.isValid(id)) {
-        //     console.log('Invalid ID format');
-        //     return res.status(400).json({ error: "Invalid ID format" });
-        // }
+        if (!ObjectId.isValid(id)) {
+            console.log('Invalid ID format');
+            return res.status(400).json({ error: "Invalid ID format" });
+        }
 
-        // const result = await Questions.deleteOne({ _id: id });
+        const result = await Questions.deleteOne({ _id: id });
 
-        const result = await Questions.deleteOne({ question: question });
+        // const result = await Questions.deleteOne({ question: question });
 
 
         if (result.deletedCount === 0) {
