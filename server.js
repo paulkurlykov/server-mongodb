@@ -23,6 +23,16 @@ app.use((req, res, next) => {
     }
     next();
 });
+
+// 📌 Раздача статических файлов из билда фронтенда
+app.use(express.static(path.join(__dirname, "../quiz-client/dist")));
+
+// 📌 Если нет API-роута, отдаём `index.html`
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../quiz-client/dist", "index.html"));
+});
+
+
 app.use(errorHandler);
 
 const start = async () => {
