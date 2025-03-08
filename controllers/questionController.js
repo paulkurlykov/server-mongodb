@@ -27,7 +27,7 @@ const create = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
     try {
-        console.log("inside get-request-function!");
+        console.log("inside getALL controller!");
         const questions = await Questions.find({});
         // const questions = [];
 
