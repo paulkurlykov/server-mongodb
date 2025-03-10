@@ -6,7 +6,6 @@ require("dotenv").config();
 const cors = require("cors");
 const router = require("./routers/index");
 const errorHandler = require("./middlewares/errorHandlingMiddleware");
-const { createProxyMiddleware } = require('http-proxy-middleware');
 
 
 const mongoDBKey = `mongodb+srv://${process.env.MONGO_LOGIN}:${process.env.MONGO_PASSWORD}@quiz-db.4qrs7.mongodb.net/?retryWrites=true&w=majority&appName=Quiz-DB`;
