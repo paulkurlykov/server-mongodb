@@ -27,17 +27,49 @@ const create = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
     try {
-        console.log("inside getALL controller!");
-        const questions = await Questions.find({});
-        // const questions = [];
+        // console.log("inside getALL controller!");
 
-        if (questions.length === 0) {
-            return res.json({ message: "there is no data" });
+
+        const topicFilterArray = req.query.topicFilter?.split(",") || [];
+
+        if(topicFilterArray.length === 0) {
+            console.log('no filter and pagination');
+            const questions = await Questions.find({});
+
+            return res.json(questions);
         }
 
-        return res.json(questions);
+        const currentPage = Number(req.query.page);
+        const itemsPerPage = Number(req.query.limit) || Number.MAX_SAFE_INTEGER;
+
+        if(!currentPage || !itemsPerPage) {
+            console.log('filter but no pagination');
+            const questions = await Questions.find({ topic: { $in: topicFilterArray }});
+
+            return res.json(questions);
+        }
+
+        const skip = (currentPage - 1) * itemsPerPage;
+        const totalCount = await Questions.countDocuments({});
+        const filteredCount = await Questions.find({ topic: { $in: topicFilterArray } }).countDocuments({});
+
+        // итоговый фетчинг элементов. Здесь фильтруется по свойству topic, оно соотносится с значениями в массиве topicFilterArray
+        const questions = await Questions.find({ topic: { $in: topicFilterArray } }).skip(skip).limit(itemsPerPage);
+
+        return res.json({
+            data: questions,
+            currentPage,
+            itemsPerPage,
+            totalCount,
+            filteredCount,
+            totalPages: Math.ceil(totalCount / itemsPerPage),
+            filteredPages: Math.ceil(filteredCount / itemsPerPage)
+
+        });
+
     } catch (err) {
         next(ApiErrors.badRequest("Could not get all questions"));
+        console.error(err.message);
     }
 };
 
@@ -45,7 +77,21 @@ const getOne = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        console.log(id);
+
+        if (!ObjectId.isValid(id)) {
+            console.log('Invalid ID format');
+            return res.status(400).json({ error: "Invalid ID format" });
+        }
+
         const question = await Questions.findById(id).exec();
+
+        // console.log(question);
+
+        if (!question._id) {
+            console.log('Could not find item with this id');
+            return res.status(404).json({ message: "Question not found" });
+        }
 
         return res.json(question);
     } catch (err) {
@@ -57,18 +103,12 @@ const removeOne = async (req, res, next) => {
     try {
         const { id } = req.params;
 
-        // const { question } =
-        // req.body;
-
         if (!ObjectId.isValid(id)) {
             console.log('Invalid ID format');
             return res.status(400).json({ error: "Invalid ID format" });
         }
 
         const result = await Questions.deleteOne({ _id: id });
-
-        // const result = await Questions.deleteOne({ question: question });
-
 
         if (result.deletedCount === 0) {
             console.log('Could not find item has this question');
@@ -83,4 +123,39 @@ const removeOne = async (req, res, next) => {
     }
 };
 
-module.exports = { create, getAll, getOne, removeOne };
+const updateOne = async (req, res, next) => {
+
+    try {
+        const { id } = req.params;
+
+    const updateData = req.body;
+
+    // validation of id's format
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: "Invalid ID format" });
+    }
+    
+    // validation of existing the id in the current db
+    const result = await Questions.findOne({ _id: id });
+
+    if (!result) {
+        return res.status(404).json({ error: "Question not found" });
+    }
+
+
+    const updatedQuestion = await Questions.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+
+    if(!updatedQuestion) {
+        return res.status(404).json({ error: "Question not found" });
+    }
+
+    res.json(updatedQuestion);
+    } catch (err) {
+        next(ApiErrors.badRequest("Could not delete question by ID"));
+        console.error("Exception " + err);
+    }
+
+}
+
+
+module.exports = { create, getAll, getOne, removeOne, updateOne };
