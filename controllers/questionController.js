@@ -27,11 +27,13 @@ const create = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
     try {
-        // console.log("inside getALL controller!");
-
 
         const topicFilterArray = req.query.topicFilter?.split(",") || [];
+        const queryFilter = req.query.queryFilter && req.query.queryFilter.length >= 3 ? req.query.queryFilter : null;
+        const filter = {};
+        
 
+        // get all raw data without any filter and pagination
         if(topicFilterArray.length === 0) {
             console.log('no filter and pagination');
             const questions = await Questions.find({});
@@ -39,9 +41,22 @@ const getAll = async (req, res, next) => {
             return res.json(questions);
         }
 
+        
+        if(topicFilterArray.length > 0) {
+            filter.topic = {$in: topicFilterArray};
+        }
+
+        if(queryFilter) {
+            filter.$or = [
+                {question: { $regex: queryFilter, $options: 'i'}},
+                {textAnswer: {$regex: queryFilter, $options: 'i'}}
+            ]
+        }
+
         const currentPage = Number(req.query.page);
         const itemsPerPage = Number(req.query.limit) || Number.MAX_SAFE_INTEGER;
 
+        // get topic-filtered data without pagination
         if(!currentPage || !itemsPerPage) {
             console.log('filter but no pagination');
             const questions = await Questions.find({ topic: { $in: topicFilterArray }});
@@ -54,7 +69,7 @@ const getAll = async (req, res, next) => {
         const filteredCount = await Questions.find({ topic: { $in: topicFilterArray } }).countDocuments({});
 
         // итоговый фетчинг элементов. Здесь фильтруется по свойству topic, оно соотносится с значениями в массиве topicFilterArray
-        const questions = await Questions.find({ topic: { $in: topicFilterArray } }).skip(skip).limit(itemsPerPage);
+        const questions = await Questions.find(filter).skip(skip).limit(itemsPerPage);
 
         return res.json({
             data: questions,
