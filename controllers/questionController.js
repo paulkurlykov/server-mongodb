@@ -41,15 +41,15 @@ const getAll = async (req, res, next) => {
             return res.json(questions);
         }
 
-        
+        // add filter if topicFilter param exists
         if(topicFilterArray.length > 0) {
             filter.topic = {$in: topicFilterArray};
         }
 
+        // add filter if queryFilter exists
         if(queryFilter) {
             filter.$or = [
-                {question: { $regex: queryFilter, $options: 'i'}},
-                {textAnswer: {$regex: queryFilter, $options: 'i'}}
+                {question: { $regex: queryFilter, $options: 'i'}}
             ]
         }
 
@@ -66,10 +66,11 @@ const getAll = async (req, res, next) => {
 
         const skip = (currentPage - 1) * itemsPerPage;
         const totalCount = await Questions.countDocuments({});
-        const filteredCount = await Questions.find({ topic: { $in: topicFilterArray } }).countDocuments({});
+        // const filteredCount = await Questions.find({ topic: { $in: topicFilterArray } }).countDocuments({});
 
-        // итоговый фетчинг элементов. Здесь фильтруется по свойству topic, оно соотносится с значениями в массиве topicFilterArray
+        // final fetch data with filter, pagination
         const questions = await Questions.find(filter).skip(skip).limit(itemsPerPage);
+        const filteredCount = await Questions.find(filter).countDocuments({});
 
         return res.json({
             data: questions,
