@@ -16,4 +16,4 @@ jobs:
         run: |
           git pull
           npm ci
-          pm2 restart quizapp
+          pm2 start npm --name "quizapp" -- start || pm2 restart quizapp
