@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Deploy to Server
         run: |
           git pull
-          npm install --production
+          npm ci
           pm2 restart quizapp
