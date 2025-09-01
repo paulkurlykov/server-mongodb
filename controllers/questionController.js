@@ -31,6 +31,12 @@ const getAll = async (req, res, next) => {
         const topicFilterArray = req.query.topicFilter?.split(",") || [];
         const queryFilter = req.query.queryFilter && req.query.queryFilter.length >= 3 ? req.query.queryFilter : null;
         const filter = {};
+
+        function escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        }
+
+        
         
 
         // get all raw data without any filter and pagination
@@ -48,8 +54,9 @@ const getAll = async (req, res, next) => {
 
         // add filter if queryFilter exists
         if(queryFilter) {
+            const safeRegex = escapeRegex(queryFilter);
             filter.$or = [
-                {question: { $regex: queryFilter, $options: 'i'}}
+                {question: { $regex: safeRegex, $options: 'i'}}
             ]
         }
 
